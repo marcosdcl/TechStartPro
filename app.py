@@ -58,6 +58,28 @@ def create():
         return render_template('index.html')
 
 
+@web_app.route('/update/<int:id>', methods=['GET', 'POST'])
+def update(id):
+
+    product = Product.query.get_or_404(id)
+    categories = Category.query.all()
+
+    if request.method == 'POST':
+        product.name = request.form['name'] 
+        product.description = request.form['description']
+        product.value = request.form['value']
+        product.category = ([])
+        db.session.commit()
+
+        categories = request.form.getlist('category')
+        for category in categories:
+            cat = Category.query.filter_by(id=category).first()
+            cat.products.append(product)
+            db.session.commit()
+        return redirect('/')
+    else:
+        return render_template('update.html', product=product, categories=categories)
+        
 
 if __name__ == '__main__':
     init_db()
