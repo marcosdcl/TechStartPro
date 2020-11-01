@@ -81,6 +81,16 @@ def update(id):
         return render_template('update.html', product=product, categories=categories)
         
 
+@web_app.route('/delete/<int:id>', methods=['GET'])
+def delete(id):
+
+    if request.method == 'GET':
+        product = Product.query.get_or_404(id)
+        db.session.delete(product)
+        db.session.commit()
+        return redirect('/')
+
+
 if __name__ == '__main__':
     init_db()
     web_app.run(debug=True)
