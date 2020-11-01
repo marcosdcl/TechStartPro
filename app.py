@@ -1,4 +1,4 @@
-from flask import Flask, url_for, render_template, request
+from flask import Flask, url_for, render_template, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from models import db, Category, Product
 import csv
@@ -12,22 +12,50 @@ def init_db():
     db.app = web_app
     db.create_all()
 
-    with open('categorias.csv', 'r') as csv_file:
-        reader = csv.DictReader(csv_file, delimiter=',')
-        for collumn in reader:
-            category = Category(name=collumn['nome'])
-            db.session.add(category)
-            db.session.commit()
+    categories = Category.query.all()
+
+    if categories:
+        pass
+    else:
+        with open('categorias.csv', 'r') as csv_file:
+            reader = csv.DictReader(csv_file, delimiter=',')
+            for collumn in reader:
+                category = Category(name=collumn['nome'])
+                db.session.add(category)
+                db.session.commit()
 
 
 @web_app.route('/', methods=['GET'])
 def index():
+
     if request.method == 'GET':
         products = Product.query.all()
         categories = Category.query.all()
         return render_template('index.html', products=products, categories=categories)
 
 
+@web_app.route('/', methods=['POST'])
+def create():
+
+    if request.method == 'POST':
+        new_product = Product(
+            name = request.form['name'], 
+            description = request.form['description'], 
+            value = request.form['value']
+        )
+        db.session.add(new_product)
+        db.session.commit()
+
+        categories = request.form.getlist('category')
+        for category in categories:
+            cat = Category.query.filter_by(id=category).first()
+            cat.products.append(new_product)
+            db.session.commit()
+
+        return redirect('/')
+
+    else:
+        return render_template('index.html')
 
 
 

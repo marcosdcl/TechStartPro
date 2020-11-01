@@ -6,6 +6,7 @@
 
 {% block body %}
 <div class="container">
+
     <div class="content">
         <h1 style="text-align: center">Products</h1>
         {% if products|length < 1 %}
@@ -38,5 +39,24 @@
             {% endfor %}
         </table>
         {% endif %}
+
+        <div class="form">
+            <h2>Register a new product bellow</h2>
+            <form action="/" method="POST">
+                <input type="text" name="name" placeholder="Name" id="content">
+                <input type="text" name="description" placeholder="Description" id="content">
+                <input type="number" step=".01" name="value" placeholder="Value" id="content">
+                {% for category in categories %}
+                    <div class="categories">
+                        <input type="checkbox" name="category" value={{ category.id }}>
+                        <label for="category">{{ category.name }}</label>
+                    </div>
+                {% endfor %}
+                <input type="submit" value="Register">
+            </form>
+        </div>
+
+    </div>
+
 </div>
 {% endblock %}
