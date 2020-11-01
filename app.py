@@ -1,10 +1,14 @@
-from flask import Flask
+from flask import Flask, url_for
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 db = SQLAlchemy(app)
 
+product_category = db.Table('product_category',
+    db.Column('category_id', db.Integer, db.ForeignKey('category.id')),
+    db.Column('product_id', db.Integer, db.ForeignKey('product.id'))
+)
 
 class Category(db.Model):
     """ Create the category table """
@@ -26,11 +30,6 @@ class Product(db.Model):
 
     def __repr__(self):
         return '<Product %r>' % self.name
-
-product_category = db.Table('product_category',
-    db.Column('category_id', db.Integer, db.ForeignKey('category.id')),
-    db.Column('product_id', db.Integer, db.ForeignKey('product.id'))
-)
 
 
 if __name__ == '__main__':
