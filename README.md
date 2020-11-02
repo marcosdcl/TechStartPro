@@ -22,3 +22,14 @@ pip install -r requirements.txt
 |  Editor | VSCode  |
 |  Python | Flask |
 
+## Documentation
+
+In TechStartPro / on the console activate venv 
+```console
+source env/bin/activate
+```
+and start the application
+```console
+python run.py
+```
+in the browser access your localhost on port 5000
