@@ -7,40 +7,47 @@ products_blueprint = Blueprint('views', __name__)
 
 @products_blueprint.route('/', methods=['GET'])
 def index():
-
+    """ List all products from the database, if any """
     if request.method == 'GET':
+        message = 0
         products = Product.query.all()
         categories = Category.query.all()
-        return render_template('index.html', products=products, categories=categories)
+        if len(products) < 1:
+            message = 1
+        return render_template('index.html', products=products, categories=categories, message=message)
 
 
 @products_blueprint.route('/', methods=['POST'])
 def create():
-
+    """ Create a new product in the database """
     if request.method == 'POST':
-        new_product = Product(
-            name = request.form['name'], 
-            description = request.form['description'], 
-            value = request.form['value']
-        )
-        db.session.add(new_product)
-        db.session.commit()
-
-        categories = request.form.getlist('category')
-        for category in categories:
-            cat = Category.query.filter_by(id=category).first()
-            cat.products.append(new_product)
+        try:
+            new_product = Product(
+                name = request.form['name'], 
+                description = request.form['description'], 
+                value = request.form['value']
+            )
+            db.session.add(new_product)
             db.session.commit()
 
-        return redirect('/')
+            categories = request.form.getlist('category')
+            for category in categories:
+                cat = Category.query.filter_by(id=category).first()
+                cat.products.append(new_product)
+                db.session.commit()
+
+            return redirect('/')
+            
+        except:
+            return redirect('/')
 
     else:
-        return render_template('index.html')
+        return redirect('/')
 
 
 @products_blueprint.route('/update/<int:id>', methods=['GET', 'POST'])
 def update(id):
-
+    """ Update some product in the database """
     product = Product.query.get_or_404(id)
     categories = Category.query.all()
 
@@ -63,7 +70,7 @@ def update(id):
 
 @products_blueprint.route('/delete/<int:id>', methods=['GET'])
 def delete(id):
-
+    """ Delete a product from the database """
     if request.method == 'GET':
         product = Product.query.get_or_404(id)
         db.session.delete(product)
@@ -72,9 +79,9 @@ def delete(id):
 
 @products_blueprint.route('/search', methods=['GET', 'POST'])
 def search():
-
+    """ Filter a product by a field or a combination of fields """
     if request.method == 'POST':
-
+        message = 0
         products = Product.query.all()
         categories = Category.query.all()
 
@@ -92,7 +99,7 @@ def search():
                 filters.append(getattr(Product, col).like("%%%s%%" % search_by_text))
             products = db.session.query(Product).filter(or_(*filters)).join(Product.category).filter(Category.name.like(search_by_category))
 
-        return render_template('filtered.html', products=products, categories=categories)
+        return render_template('index.html', products=products, categories=categories, message=message)
         
 
     else:

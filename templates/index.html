@@ -5,70 +5,70 @@
 {% endblock %}
 
 {% block body %}
+
 <div class="container">
+    <h1 style="text-align: center">Products</h1>
+    {% if message == 1 %}
+        <h4 style="text-align: center">There are no products. Create one bellow!</h4>
+    {% else %}
 
-    <div class="content">
-        <h1 style="text-align: center">Products</h1>
-        {% if products|length < 1 %}
-            <h4 style="text-align: center">There are no products. Create one below!</h4>
-        {% else %}
-            <div class="form">
-                <form action="/search" method="POST">
-                    <input type="text" name="filter_text" placeholder="search" id="search">
-                    <select  name="category" id="categories">
-                    <option name="category" value="all">Categories - all</option>
-                    {% for category in categories %}
-                        <option value={{ category.name }}>{{ category.name }}</option>
-                    {% endfor %}
-                    </select>
-                    <input type="submit" value="filter">
-                </form>
-            </div>
-            <table>
-                <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Value</th>
-                    <th>Categories</th>
-                    <th>Actions</th>
-                </tr>
-                {% for product in products %}
-                    <tr>
-                        <td>{{ product.name }}</td>
-                        <td>{{ product.description }}</td>
-                        <td>{{ product.value }}</td>
-                        <td>
-                            {% for category in product.category %}
-                                {{ category.name }}
-                            {% endfor %}
-                        </td>
-                        <td>
-                            <a href="/delete/{{ product.id }}">Delete</a>
-                            <br>
-                            <a href="/update/{{ product.id }}">Update</a>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </table>
-        {% endif %}
-
-        <div class="form">
-            <h2>Register a new product</h2>
-            <form action="/" method="POST">
-                <input type="text" name="name" placeholder="Name" id="content">
-                <input type="text" name="description" placeholder="Description" id="content">
-                <input type="number" step=".01" name="value" placeholder="Value" id="content">
+        <div>
+            <form action="/search" method="POST">
+                <input class="search" type="text" name="filter_text" placeholder="search" id="search">
+                <select  name="category" id="categories">
+                <option name="category" value="all">Categories - all</option>
                 {% for category in categories %}
-                    <div class="categories">
-                        <input type="checkbox" name="category" value={{ category.id }}>
-                        <label for="category">{{ category.name }}</label>
-                    </div>
+                    <option value={{ category.name }}>{{ category.name }}</option>
                 {% endfor %}
-                <input type="submit" value="Register">
+                </select>
+                <input type="submit" value="filter">
             </form>
         </div>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Value</th>
+                <th>Categories</th>
+                <th>Actions</th>
+            </tr>
+            {% for product in products %}
+                <tr>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.description }}</td>
+                    <td>$ {{ product.value }}</td>
+                    <td>
+                        {% for category in product.category %}
+                            {{ category.name }}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <a href="/delete/{{ product.id }}">Delete</a>
+                        <br>
+                        <a href="/update/{{ product.id }}">Update</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
 
+    <div class="form">
+        <h2>Register a new product</h2>
+        <form action="/" method="POST">
+            <input type="text" name="name" placeholder="Name" id="content">
+            <input type="text" name="description" placeholder="Description" id="content">
+            <input type="number" step=".01" name="value" placeholder="Value" id="content">
+            <p>Categories:</p>
+            {% for category in categories %}
+                <div class="categories">
+                    <input type="checkbox" name="category" value={{ category.id }}>
+                    <label for="category">{{ category.name }}</label>
+                </div>
+            {% endfor %}
+            <input type="submit" value="Register">
+        </form>
     </div>
 
 </div>
+
 {% endblock %}
