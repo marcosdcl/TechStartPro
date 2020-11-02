@@ -1,5 +1,6 @@
 from flask import Flask, url_for, render_template, request, redirect
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import or_
 from models import db, Category, Product
 import csv
 
@@ -90,6 +91,33 @@ def delete(id):
         db.session.commit()
         return redirect('/')
 
+@web_app.route('/search', methods=['GET', 'POST'])
+def filter():
+
+    if request.method == 'POST':
+
+        products = Product.query.all()
+        categories = Category.query.all()
+
+        filters = []
+        columns = ['name','description','value']
+        search_by_category = request.form['category']
+        search_by_text = request.form['filter_text']
+
+        if search_by_category == 'all':
+            for col in columns:
+                filters.append(getattr(Product, col).like("%%%s%%" % search_by_text))
+            products = Product.query.filter(or_(*filters))
+        else:
+            for col in columns:
+                filters.append(getattr(Product, col).like("%%%s%%" % search_by_text))
+            products = db.session.query(Product).filter(or_(*filters)).join(Product.category).filter(Category.name.like(search_by_category))
+
+        return render_template('filtered.html', products=products, categories=categories)
+        
+
+    else:
+        return redirect('/')
 
 if __name__ == '__main__':
     init_db()

@@ -9,21 +9,18 @@
 
     <div class="content">
         <h1 style="text-align: center">Products</h1>
-        {% if products|length < 1 %}
-            <h4 style="text-align: center">There are no products. Create one below!</h4>
-        {% else %}
-            <div class="form">
-                <form action="/search" method="POST">
-                    <input type="text" name="filter_text" placeholder="search" id="search">
-                    <select  name="category" id="categories">
-                    <option name="category" value="all">Categories - all</option>
-                    {% for category in categories %}
-                        <option value={{ category.name }}>{{ category.name }}</option>
-                    {% endfor %}
-                    </select>
-                    <input type="submit" value="filter">
-                </form>
-            </div>
+        <div class="form">
+            <form action="/search" method="POST">
+                <input type="text" name="filter_text" placeholder="search" id="search">
+                <select  name="category" id="categories">
+                <option name="category" value="all">Categories - all</option>
+                {% for category in categories %}
+                    <option value={{ category.name }}>{{ category.name }}</option>
+                {% endfor %}
+                </select>
+                <input type="submit" value="filter">
+            </form>
+        </div>
             <table>
                 <tr>
                     <th>Name</th>
@@ -50,7 +47,6 @@
                     </tr>
                 {% endfor %}
             </table>
-        {% endif %}
 
         <div class="form">
             <h2>Register a new product</h2>
