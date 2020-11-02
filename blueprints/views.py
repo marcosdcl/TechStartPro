@@ -1,30 +1,11 @@
-from flask import Flask, url_for, render_template, request, redirect
+from flask import Blueprint, url_for, render_template, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
 from models import db, Category, Product
-from app import app
-import csv
 
-def init_db():
-    """ Initializes my database coming from models """
-    db.init_app(app)
-    db.app = app
-    db.create_all()
+products_blueprint = Blueprint('views', __name__)
 
-    categories = Category.query.all()
-
-    if categories:
-        pass
-    else:
-        with open('categorias.csv', 'r') as csv_file:
-            reader = csv.DictReader(csv_file, delimiter=',')
-            for collumn in reader:
-                category = Category(name=collumn['nome'])
-                db.session.add(category)
-                db.session.commit()
-
-
-@app.route('/', methods=['GET'])
+@products_blueprint.route('/', methods=['GET'])
 def index():
 
     if request.method == 'GET':
@@ -33,7 +14,7 @@ def index():
         return render_template('index.html', products=products, categories=categories)
 
 
-@app.route('/', methods=['POST'])
+@products_blueprint.route('/', methods=['POST'])
 def create():
 
     if request.method == 'POST':
@@ -57,7 +38,7 @@ def create():
         return render_template('index.html')
 
 
-@app.route('/update/<int:id>', methods=['GET', 'POST'])
+@products_blueprint.route('/update/<int:id>', methods=['GET', 'POST'])
 def update(id):
 
     product = Product.query.get_or_404(id)
@@ -80,7 +61,7 @@ def update(id):
         return render_template('update.html', product=product, categories=categories)
         
 
-@app.route('/delete/<int:id>', methods=['GET'])
+@products_blueprint.route('/delete/<int:id>', methods=['GET'])
 def delete(id):
 
     if request.method == 'GET':
@@ -89,7 +70,7 @@ def delete(id):
         db.session.commit()
         return redirect('/')
 
-@app.route('/search', methods=['GET', 'POST'])
+@products_blueprint.route('/search', methods=['GET', 'POST'])
 def search():
 
     if request.method == 'POST':
